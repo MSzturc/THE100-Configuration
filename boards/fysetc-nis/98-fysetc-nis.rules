@@ -1,0 +1,2 @@
+# Fysetc NIS
+SUBSYSTEMS=="usb", ATTRS{idProduct}=="614e",  ATTRS{idVendor}=="1d50", ATTRS{serial}=="fysetc-nis", ACTION=="add", SYMLINK+="fysetc-nis", RUN+="/home/pi/printer_data/config/config/scripts/klipper-mcu-added.sh"
