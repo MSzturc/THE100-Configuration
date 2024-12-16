@@ -13,6 +13,9 @@ KLIPPER_CONFIG_PATH="$(user_dir)/printer_data/config"
 # Where to clone THE100-Configuration repository
 THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
 
+# Where the Moonraker folder is located
+MOONRAKER_PATH="$(user_dir)/moonraker"
+
 # Branch from MSzturc/THE100-Configuration repo to use during install (default: main)
 THE100_CONFIG_REPOSITORY="https://github.com/MSzturc/THE100-Configuration.git"
 
@@ -73,6 +76,14 @@ install_hooks()
         # Create a symbolic link for klipper post-merge script
         ln -s "$SCRIPT_DIR/post-merge-klipper.sh" "$KLIPPER_PATH/.git/hooks/post-merge"
         info "Post-merge hook set up for klipper."
+    fi
+
+    # Check if the post-merge hook for moonraker does not already exist as a symbolic link
+    if [[ ! -L "$MOONRAKER_PATH/.git/hooks/post-merge" ]]
+    then
+        # Create a symbolic link for moonraker post-merge script
+        ln -s "$SCRIPT_DIR/post-merge-moonraker.sh" "$MOONRAKER_PATH/.git/hooks/post-merge"
+        info "Post-merge hook set up for moonraker."
     fi
 }
 
