@@ -122,24 +122,50 @@ install_logs() {
     info "Permissions for file $log_file set: read and write for all users."
 }
 
-sudoers() {
+setup_sudo_permissions() {
+    info "Starting sudo permissions setup."
+
+    # Check if the sudoers configuration file for "theos-githooks" already exists
     if [[ -e /etc/sudoers.d/030-theos-githooks ]]
     then
+        debug "Found existing sudoers file: /etc/sudoers.d/030-theos-githooks. Removing it."
         sudo rm /etc/sudoers.d/030-theos-githooks
+    else
+        debug "No existing sudoers file found. Proceeding with setup."
     fi
 
+    # Create a temporary file for the new sudoers configuration
+    info "Creating temporary sudoers file at /tmp/030-theos-githooks."
     touch /tmp/030-theos-githooks
+
+    # Write the new sudoers rules into the temporary file
+    info "Writing new sudo rules to temporary file."
     cat > /tmp/030-theos-githooks << EOF
 $(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-configuration.sh
 $(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-klipper.sh
 $(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-moonraker.sh
 EOF
 
-     sudo chown root:root /tmp/030-theos-githooks
-     sudo chmod 440 /tmp/030-theos-githooks
-     sudo cp --preserve=mode /tmp/030-theos-githooks /etc/sudoers.d/030-theos-githooks
-     sudo rm /tmp/030-theos-githooks
+    # Set ownership of the temporary file to root
+    debug "Changing ownership of /tmp/030-theos-githooks to root:root."
+    sudo chown root:root /tmp/030-theos-githooks
+
+    # Set permissions to read-only for the owner
+    debug "Setting file permissions to 440 (read-only for root) on /tmp/030-theos-githooks."
+    sudo chmod 440 /tmp/030-theos-githooks
+
+    # Copy the temporary file to the sudoers directory
+    info "Copying temporary file to /etc/sudoers.d/030-theos-githooks with preserved permissions."
+    sudo cp --preserve=mode /tmp/030-theos-githooks /etc/sudoers.d/030-theos-githooks
+
+    # Clean up: remove the temporary file
+    debug "Removing temporary file: /tmp/030-theos-githooks."
+    sudo rm /tmp/030-theos-githooks
+
+    info "Sudo permissions setup completed successfully."
 }
+
+
 
 
 
@@ -154,4 +180,4 @@ download_configuration
 install_configuration
 install_logs
 install_hooks
-sudoers
+setup_sudo_permissions
