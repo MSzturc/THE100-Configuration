@@ -122,6 +122,27 @@ install_logs() {
     info "Permissions for file $log_file set: read and write for all users."
 }
 
+sudoers() {
+    if [[ -e /etc/sudoers.d/030-theos-githooks ]]
+    then
+        sudo rm /etc/sudoers.d/030-theos-githooks
+    fi
+
+    touch /tmp/030-theos-githooks
+    cat > /tmp/030-theos-githooks << EOF
+$(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-configuration.sh
+$(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-klipper.sh
+$(current_user) ALL=(ALL) NOPASSWD: $(user_dir)/THE100-Configuration/scripts/update-moonraker.sh
+EOF
+
+     sudo chown root:root /tmp/030-theos-githooks
+     sudo chmod 440 /tmp/030-theos-githooks
+     sudo cp --preserve=mode /tmp/030-theos-githooks /etc/sudoers.d/030-theos-githooks
+     sudo rm /tmp/030-theos-githooks
+}
+
+
+
 
 preflight_checks() {
     ensure_not_root
@@ -133,3 +154,4 @@ download_configuration
 install_configuration
 install_logs
 install_hooks
+sudoers
