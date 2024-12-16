@@ -1,7 +1,16 @@
 #!/bin/bash
 
+# Where this Script is located
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# Include the logging functions
+source "$SCRIPT_DIR"/user_dir.sh
+
 # Global variable to store the last used timestamp
 LAST_TIMESTAMP=""
+
+# File to check if debugging is active
+DEBUGGING_FILE="$(user_dir)/logs/debugging.active"
 
 # Logging function with precise alignment of log levels
 log() {
@@ -28,7 +37,9 @@ log() {
 
 # Individual functions for each log level
 debug() {
-    log "DEBUG" "\e[36m" "$1"  # Cyan
+    if [ -f "$DEBUGGING_FILE" ]; then
+        log "DEBUG" "\e[36m" "$1"  # Cyan
+    fi
 }
 
 info() {
@@ -45,4 +56,19 @@ error() {
 
 check() {
     log "CHECK" "\e[32m" "$1"  # Green (same as INFO, but for checks)
+}
+
+# Function to enable debugging
+enable_debugging() {
+    mkdir -p "$(user_dir)/logs"
+    touch "$DEBUGGING_FILE"
+    info "Debugging enabled."
+}
+
+# Function to disable debugging
+disable_debugging() {
+    if [ -f "$DEBUGGING_FILE" ]; then
+        rm "$DEBUGGING_FILE"
+        info "Debugging disabled."
+    fi
 }
