@@ -13,6 +13,16 @@ ensure_not_root() {
     fi
 }
 
+# Function to ensure the script IS run as root.
+ensure_root() {
+    if [ "$EUID" -ne 0 ]; then
+        error "This script must be run as root!"
+        exit 1
+    else
+        check "Script is being run as root. Proceeding..."
+    fi
+}
+
 # Function to check if Klipper is installed
 is_klipper_installed() {
     if [ "$(sudo systemctl list-units --full -all -t service --no-legend | grep -F 'klipper.service')" ]; then
