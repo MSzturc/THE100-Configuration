@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Global variable to store the last used timestamp
-LAST_TIMESTAMP=""
+LAST_FILE_TIMESTAMP=""
+LAST_CONSOLE_TIMESTAMP=""
 
 # Logging function with precise alignment of log levels
 log() {
@@ -18,28 +19,32 @@ log() {
 
     timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 
-    # Fixed width for the timestamp and log level
-    local timestamp_width=21
+    # Fixed width for the timestamp and fixed width for the log level brackets
+    local timestamp_width=22
     local level_width=10
+
+    # Center the log level within the fixed width
+    local level_padding=$(( (level_width - ${#level}) / 2 ))
+    local padded_level="$(printf "%${level_padding}s%s%${level_padding}s" "" "$level" "")"
 
     # Append log to the log file with the same format as console output
     mkdir -p "$(user_dir)/logs"
-    if [ "$timestamp" != "$LAST_TIMESTAMP" ]; then
-        printf "%-${timestamp_width}s [%s] %-${level_width}s %s (%s)\n" "[$timestamp]" "$level" "[$level]" "$text" "$caller" >> "$LOG_FILE"
-        LAST_TIMESTAMP="$timestamp"
+    if [ "$timestamp" != "$LAST_FILE_TIMESTAMP" ]; then
+        printf "%-${timestamp_width}s[%-${level_width}s] %s (%s)\n" "[$timestamp]" "$padded_level" "$text" "$caller" >> "$LOG_FILE"
+        LAST_FILE_TIMESTAMP="$timestamp"
     else
-        printf "%-${timestamp_width}s [%s] %-${level_width}s %s (%s)\n" " " "$level" "[$level]" "$text" "$caller" >> "$LOG_FILE"
+        printf "%*s[%-${level_width}s] %s (%s)\n" ${timestamp_width} "" "$padded_level" "$text" "$caller" >> "$LOG_FILE"
     fi
 
     # Print to console only if not DEBUG or debugging is active
     if [ "$level" != "DEBUG" ] || [ -f "$(user_dir)/logs/debugging.active" ]; then
-        if [ "$timestamp" != "$LAST_TIMESTAMP" ]; then
+        if [ "$timestamp" != "$LAST_CONSOLE_TIMESTAMP" ]; then
             # Print timestamp and log level
-            printf "%-${timestamp_width}s %b%-${level_width}s\e[0m %s (%s)\n" "[$timestamp]" "$color" "[$level]" "$text" "$caller"
-            LAST_TIMESTAMP="$timestamp"
+            printf "%-${timestamp_width}s%b[%-${level_width}s]\e[0m %s\n" "[$timestamp]" "$color" "$padded_level" "$text"
+            LAST_CONSOLE_TIMESTAMP="$timestamp"
         else
             # Print only spaces for the timestamp and align log level
-            printf "%-${timestamp_width}s %b%-${level_width}s\e[0m %s (%s)\n" " " "$color" "[$level]" "$text" "$caller"
+            printf "%*s%b[%-${level_width}s]\e[0m %s\n" ${timestamp_width} "" "$color" "$padded_level" "$text"
         fi
     fi
 }
