@@ -16,6 +16,7 @@ log() {
 
     # Determine the caller function/file
     caller=$(caller 1 | awk '{print $2}')
+    caller="[$(printf "%-22s" "$caller")]" # Ensure fixed width of 24 characters with brackets
 
     timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 
@@ -27,13 +28,13 @@ log() {
     local level_padding=$(( (level_width - ${#level}) / 2 ))
     local padded_level="$(printf "%${level_padding}s%s%${level_padding}s" "" "$level" "")"
 
-    # Append log to the log file with the same format as console output
+    # Append log to the log file with the caller in its own column
     mkdir -p "$(user_dir)/logs"
     if [ "$timestamp" != "$LAST_FILE_TIMESTAMP" ]; then
-        printf "%-${timestamp_width}s[%-${level_width}s] %s (%s)\n" "[$timestamp]" "$padded_level" "$text" "$caller" >> "$LOG_FILE"
+        printf "%-${timestamp_width}s[%-${level_width}s] %-24s %s\n" "[$timestamp]" "$padded_level" "$caller" "$text" >> "$LOG_FILE"
         LAST_FILE_TIMESTAMP="$timestamp"
     else
-        printf "%*s[%-${level_width}s] %s (%s)\n" ${timestamp_width} "" "$padded_level" "$text" "$caller" >> "$LOG_FILE"
+        printf "%*s[%-${level_width}s] %-24s %s\n" ${timestamp_width} "" "$padded_level" "$caller" "$text" >> "$LOG_FILE"
     fi
 
     # Print to console only if not DEBUG or debugging is active
