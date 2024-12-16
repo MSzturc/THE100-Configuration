@@ -7,18 +7,35 @@ LAST_CONSOLE_TIMESTAMP=""
 # Logging function with precise alignment of log levels
 log() {
     LOG_FILE="$(user_dir)/logs/theos.log"
+    LAST_DAY_FILE="$(user_dir)/logs/last_day_checked"
 
     local level="$1"
     local color="$2"
     local text="$3"
     local caller
     local timestamp
+    local current_day
 
     # Determine the caller function/file
     caller=$(caller 1 | awk '{print $2}')
     caller="[$(printf "%-22s" "$caller")]" # Ensure fixed width of 24 characters with brackets
 
     timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+    current_day=$(date +"%Y-%m-%d")
+
+    # Check if the last_day_checked file exists, if not create it
+    if [ ! -f "$LAST_DAY_FILE" ]; then
+        echo "$current_day" > "$LAST_DAY_FILE"
+    fi
+
+    # Read the last checked day from the file
+    LAST_DAY_CHECKED=$(cat "$LAST_DAY_FILE")
+
+    # Check if a new day has started and clear the log if so
+    if [ "$current_day" != "$LAST_DAY_CHECKED" ]; then
+        > "$LOG_FILE"
+        echo "$current_day" > "$LAST_DAY_FILE"
+    fi
 
     # Fixed width for the timestamp and fixed width for the log level brackets
     local timestamp_width=22
