@@ -7,6 +7,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$SCRIPT_DIR"/helpers/log.sh
 source "$SCRIPT_DIR"/helpers/user_dir.sh
 
+debug "$SCRIPT_DIR"/helpers/log.sh
+debug "$SCRIPT_DIR"/helpers/user_dir.sh
+
 # Function to ensure the script is NOT run as root.
 ensure_not_root() {
     if [ "$EUID" -eq 0 ]; then
