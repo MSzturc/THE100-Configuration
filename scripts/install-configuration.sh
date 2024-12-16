@@ -40,7 +40,7 @@ install_configuration() {
     # Symlink THE100 Configuration (read-only git repository) to the user's config directory
     info "Creating symbolic links for configuration directories..."
     for dir in config macros scripts; do
-        info "Linking directory: $dir"
+        debug "Linking directory: $dir"
         ln -fsn ${THE100_CONFIG_PATH}/$dir ${KLIPPER_CONFIG_PATH}/$dir
     done
 
@@ -57,12 +57,22 @@ install_configuration() {
 # install scripts for different Klipper addons.
 install_hooks()
 {
-     # Check if the post-merge hook for THE100-Configuration does not already exist as a symbolic link
-    if [[ ! -L "$(user_dir)/THE100-Configuration/.git/hooks/post-merge" ]]
+    info "Installing git hooks..."
+
+    # Check if the post-merge hook for THE100-Configuration does not already exist as a symbolic link
+    if [[ ! -L "$THE100_CONFIG_PATH/.git/hooks/post-merge" ]]
     then
         # Create a symbolic link for the THE100-Configuration post-merge script
-        ln -s "$SCRIPT_DIR/post-merge-configuration.sh" "$(user_dir)/THE100-Configuration/.git/hooks/post-merge"
+        ln -s "$SCRIPT_DIR/post-merge-configuration.sh" "$THE100_CONFIG_PATH/.git/hooks/post-merge"
         info "Post-merge hook set up for THE100-Configuration."
+    fi
+
+    # Check if the post-merge hook for klipper does not already exist as a symbolic link
+    if [[ ! -L "$KLIPPER_PATH/.git/hooks/post-merge" ]]
+    then
+        # Create a symbolic link for klipper post-merge script
+        ln -s "$SCRIPT_DIR/post-merge-klipper.sh" "$KLIPPER_PATH/.git/hooks/post-merge"
+        info "Post-merge hook set up for klipper."
     fi
 }
 
