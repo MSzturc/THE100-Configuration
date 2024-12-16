@@ -5,13 +5,13 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$SCRIPT_DIR"/utils.sh
 
 # Where the Klipper folder is located
-KLIPPER_PATH="${HOME}/klipper"
+KLIPPER_PATH="$(user_dir)/klipper"
 
 # Where the user Klipper config is located
-KLIPPER_CONFIG_PATH="${HOME}/printer_data/config"
+KLIPPER_CONFIG_PATH="$(user_dir)/printer_data/config"
 
 # Where to clone THE100-Configuration repository
-THE100_CONFIG_PATH="${HOME}/THE100-Configuration"
+THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
 
 # Branch from MSzturc/THE100-Configuration repo to use during install (default: main)
 THE100_CONFIG_REPOSITORY="https://github.com/MSzturc/THE100-Configuration.git"
@@ -58,10 +58,10 @@ installConfiguration() {
 install_hooks()
 {
      # Check if the post-merge hook for THE100-Configuration does not already exist as a symbolic link
-    if [[ ! -L "$HOME/THE100-Configuration/.git/hooks/post-merge" ]]
+    if [[ ! -L "$(user_dir)/THE100-Configuration/.git/hooks/post-merge" ]]
     then
         # Create a symbolic link for the THE100-Configuration post-merge script
-        ln -s "$SCRIPT_DIR/post-merge-configuration.sh" "$HOME/THE100-Configuration/.git/hooks/post-merge"
+        ln -s "$SCRIPT_DIR/post-merge-configuration.sh" "$(user_dir)/THE100-Configuration/.git/hooks/post-merge"
         info "Post-merge hook set up for THE100-Configuration."
     fi
 }

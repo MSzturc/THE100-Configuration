@@ -11,7 +11,7 @@ preflight_checks() {
 
 hallo()
 {
-    local log_file="${HOME}/printer_data/config/info.log"
+    local log_file="$(user_dir)/printer_data/config/info.log"
     echo "Hallo" > "$log_file"
 }
 
