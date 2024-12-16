@@ -71,14 +71,7 @@ preflight_checks() {
     is_klipper_installed
 }
 
-hallo()
-{
-    local log_file="${HOME}/info.log"
-    echo "Hallo" > "$log_file"
-}
-
 preflight_checks
 downloadConfiguration
 installConfiguration
 install_hooks
-hallo
