@@ -165,6 +165,22 @@ EOF
     info "Sudo permissions setup completed successfully."
 }
 
+install_udev_rules()
+{
+  info "Updating THEOS Board device symlinks.."
+  
+  # Remove existing udev rules files in /etc/udev/rules.d/ 
+  # All board-specific udev rule files in THE100-Configuration are prefixed with '98-'
+  rm -f /etc/udev/rules.d/98-*.rules
+  
+  # Create symbolic links for the updated udev rules from the configuration directory
+  # Source: THE100-Configuration/config/boards/*/*.rules
+  # Destination: /etc/udev/rules.d/ (udev directory where rule files are loaded)
+  # This ensures the system uses the latest board-specific udev rules for device management
+  ln -s $(user_dir)/THE100-Configuration/config/boards/*/*.rules /etc/udev/rules.d/
+}
+
+
 
 
 
@@ -181,3 +197,4 @@ install_configuration
 install_logs
 install_hooks
 setup_sudo_permissions
+install_udev_rules
