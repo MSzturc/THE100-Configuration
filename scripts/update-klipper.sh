@@ -16,6 +16,9 @@ THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
 # Where the Moonraker folder is located
 MOONRAKER_PATH="$(user_dir)/moonraker"
 
+# Where the BD_Sensor folder is located
+BD_SENSOR_PATH="$(user_dir)/Bed_Distance_sensor/klipper"
+
 # This function sets up git hooks for THE100-Configuration, Klipper, and Moonraker.
 # The post-merge hooks ensure that specific scripts are executed automatically
 # after a 'git pull' or 'git merge' operation in each repository. We use it to reapply
@@ -49,6 +52,42 @@ install_hooks()
     fi
 }
 
+install_bdsensor_extension(){
+    info "Installing BD_Sensor extension to klipper..."
+
+    # Check if BDsensor.py does not already exist as a symbolic link
+    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/BDsensor.py" ]]
+    then
+        # Create a symbolic link for BDsensor.py
+        ln -s "$BD_SENSOR_PATH/BDsensor.py" "$KLIPPER_PATH/klippy/plugins/BDsensor.py"
+    fi
+
+    # Check if BD_sensor.c does not already exist as a symbolic link
+    if [[ ! -L "$KLIPPER_PATH/src/BD_sensor.c" ]]
+    then
+        # Create a symbolic link for BD_sensor.c
+        ln -s "$BD_SENSOR_PATH/BD_sensor.c" "$KLIPPER_PATH/src/BD_sensor.c"
+    fi
+
+    # Check if make_with_bdsensor.sh does not already exist as a symbolic link
+    if [[ ! -L "$KLIPPER_PATH/make_with_bdsensor.sh" ]]
+    then
+        # Create a symbolic link for make_with_bdsensor.sh
+        ln -s "$BD_SENSOR_PATH/make_with_bdsensor.sh" "$KLIPPER_PATH/make_with_bdsensor.sh"
+    fi
+
+    if ! grep -q "klippy/plugins/BDsensor.py" "$KLIPPER_PATH/.git/info/exclude"; then
+        echo "klippy/plugins/BDsensor.py" >> "$KLIPPER_PATH/.git/info/exclude"
+    fi
+    if ! grep -q "src/BD_sensor.c" "$KLIPPER_PATH/.git/info/exclude"; then
+        echo "src/BD_sensor.c" >> "$KLIPPER_PATH/.git/info/exclude"
+    fi
+
+    if ! grep -q "make_with_bdsensor.sh" "$KLIPPER_PATH/.git/info/exclude"; then
+        echo "make_with_bdsensor.sh" >> "$KLIPPER_PATH/.git/info/exclude"
+    fi
+}
+
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -56,3 +95,4 @@ preflight_checks() {
 
 preflight_checks
 install_hooks
+install_bdsensor_extension
