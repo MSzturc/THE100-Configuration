@@ -10,6 +10,9 @@ KLIPPER_CONFIG_PATH="$(user_dir)/printer_data/config"
 # Where to clone THE100-Configuration repository
 THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
 
+# Where the THEOS Logs are located
+THEOS_LOGS_PATH="$(user_dir)/logs"
+
 update_configuration() {
     info "Installation of THE100 Configuration..."
     
@@ -19,6 +22,10 @@ update_configuration() {
         debug "Linking directory: $dir"
         ln -fsn ${THE100_CONFIG_PATH}/$dir ${KLIPPER_CONFIG_PATH}/$dir
     done
+
+    info "Creating symbolic links for logs directory..."
+    ln -fsn ${THEOS_LOGS_PATH} ${KLIPPER_CONFIG_PATH}/logs
+
     info "Installation of THE100 Configuration completed successfully!"
 }
 
