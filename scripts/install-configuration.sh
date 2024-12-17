@@ -74,7 +74,6 @@ install_logs() {
 
 preflight_checks() {
     ensure_not_root
-    is_klipper_installed
 }
 
 preflight_checks
@@ -85,5 +84,3 @@ sudo "$SCRIPT_DIR"/update-configuration.sh
 sudo "$SCRIPT_DIR"/update-klipper.sh
 sudo "$SCRIPT_DIR"/update-moonraker.sh
 sudo "$SCRIPT_DIR"/install-printer-cfg.sh
-
-restart_klipper_service

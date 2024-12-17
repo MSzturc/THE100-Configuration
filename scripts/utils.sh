@@ -17,6 +17,9 @@ PRINTER_DATA_PATH="$(user_dir)/printer_data"
 # Where the Moonraker folder is located
 MOONRAKER_PATH="$(user_dir)/moonraker"
 
+# Where the Klipper folder is located
+KLIPPER_PATH="$(user_dir)/klipper"
+
 # Function to ensure the script is NOT run as root.
 ensure_not_root() {
     if [ "$EUID" -eq 0 ]; then
@@ -39,10 +42,10 @@ ensure_root() {
 
 # Function to check if Klipper is installed
 is_klipper_installed() {
-    if [ "$(sudo systemctl list-units --full -all -t service --no-legend | grep -F 'klipper.service')" ]; then
-        check "Klipper service found! Proceeding..."
+    if [ -d "$KLIPPER_PATH" ]; then
+        check "klipper folder found. Proceeding..."
     else
-        error "Klipper service not found, please install Klipper first!"
+        error "Error: klipper folder not found at '$KLIPPER_PATH'."
         exit 1
     fi
 }
