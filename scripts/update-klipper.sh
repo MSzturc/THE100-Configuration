@@ -19,6 +19,9 @@ MOONRAKER_PATH="$(user_dir)/moonraker"
 # Where the BD_Sensor folder is located
 BD_SENSOR_PATH="$(user_dir)/Bed_Distance_sensor/klipper"
 
+# Where the Shake&Tune folder is located
+SHAKETUNE_PATH="$(user_dir)/klippain_shaketune"
+
 # This function sets up git hooks for THE100-Configuration, Klipper, and Moonraker.
 # The post-merge hooks ensure that specific scripts are executed automatically
 # after a 'git pull' or 'git merge' operation in each repository. We use it to reapply
@@ -120,6 +123,28 @@ install_bdsensor_extension(){
     info "BD_Sensor extension installation completed."
 }
 
+install_shaketune_extension(){
+    info "Installing Shake&Tune extension to klipper..."
+
+    # Debug-Ausgabe: Pfade anzeigen
+    debug "SHAKETUNE_PATH is set to '$SHAKETUNE_PATH'"
+    debug "KLIPPER_PATH is set to '$KLIPPER_PATH'"
+
+    # Check if shaketune directory does not already exist as a symbolic link
+    if [[ ! -d "$KLIPPER_PATH/klippy/extras/shaketune" ]]
+    then
+        debug "Creating symbolic link for shaketune..."
+        # Create a symbolic link for shaketune directory
+        ln -frsn "$SHAKETUNE_PATH/shaketune" "${KLIPPER_PATH}/klippy/extras/shaketune"
+        debug "Symbolic link for shaketune directory created."
+    else
+        debug "Symbolic link for shaketune directory already exists. Skipping."
+    fi
+
+    info "Shake&Tune extension installation completed."
+}
+
+
 
 preflight_checks() {
     ensure_root
@@ -129,3 +154,4 @@ preflight_checks() {
 preflight_checks
 install_hooks
 install_bdsensor_extension
+install_shaketune_extension
