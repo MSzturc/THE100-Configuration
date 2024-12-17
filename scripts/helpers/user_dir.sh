@@ -1,25 +1,24 @@
 # This function retrieves the home directory of the current user.
-# - If the script is run with sudo, it determines the home directory of the original user (SUDO_USER).
-# - If the script is not run with sudo, it uses the home directory of the current user ($HOME).
+# - If the script is run with sudo, and SUDO_USER=root, it overrides SUDO_USER with 'pi'.
+# - If the BASE_USER variable is set, it determines the home directory based on BASE_USER.
+# - Otherwise, it uses the home directory of the current user ($HOME).
 user_dir()
 {
     local home_dir
 
+    # Wenn SUDO_USER=root, setze SUDO_USER=pi
+    if [[ "$SUDO_USER" == "root" ]]; then
+        SUDO_USER="pi"
+    fi
+
     # Check if BASE_USER environment variable is set
     if [[ -n "$BASE_USER" ]]; then
-        echo "BASE_USER ist gesetzt auf '$BASE_USER'."
         home_dir=$(getent passwd "$BASE_USER" | cut -d: -f6)
-        echo "Home-Verzeichnis für BASE_USER: $home_dir"
     elif [[ -n "$SUDO_USER" ]]; then
-        echo "SUDO_USER ist gesetzt auf '$SUDO_USER'."
         home_dir=$(getent passwd "$SUDO_USER" | cut -d: -f6)
-        echo "Home-Verzeichnis für SUDO_USER: $home_dir"
     else
-        echo "Weder BASE_USER noch SUDO_USER sind gesetzt. Verwende aktuelles HOME: $HOME"
         home_dir="$HOME"
     fi
 
-    # Print the final home directory
-    echo "Verwendetes Home-Verzeichnis: $home_dir"
     echo "$home_dir"
 }
