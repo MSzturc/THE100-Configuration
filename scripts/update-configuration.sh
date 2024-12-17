@@ -92,8 +92,6 @@ EOF
 
 preflight_checks() {
     ensure_root
-    is_klipper_installed
-    is_moonraker_installed
     is_configuration_installed
 }
 
