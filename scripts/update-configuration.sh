@@ -5,7 +5,10 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$SCRIPT_DIR"/utils.sh
 
 # Where the user Klipper config is located
-KLIPPER_CONFIG_PATH="$(user_dir)/printer_data/config"
+PRINTER_DATA_PATH="$(user_dir)/printer_data"
+
+# Where the user Klipper config is located
+KLIPPER_CONFIG_PATH="${PRINTER_DATA_PATH}/config"
 
 # Where to clone THE100-Configuration repository
 THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
@@ -87,6 +90,54 @@ EOF
     info "Sudo permissions setup completed successfully."
 }
 
+ensure_moonraker_permissions() {
+    local file_path="${PRINTER_DATA_PATH}/moonraker.asvc"
+
+    info "Authorized Moonraker to manage Services..."
+
+    # List of services that Moonraker should manage
+    local elements=(
+        "klipper_mcu"          
+        "webcamd"                
+        "MoonCord"               
+        "KlipperScreen"          
+        "moonraker-telegram-bot" 
+        "sonar"                  
+        "crowsnest"               
+    )
+
+    # TODO: Define THE100-Configuration as managed service
+
+    # Write the service names to the file, one per line
+    {
+        for element in "${elements[@]}"; do
+            echo "$element"
+        done
+    } > "$file_path"
+    
+    # Check if writing to the file was successful
+    if [ $? -ne 0 ]; then
+        error "Failed to write to file '$file_path'. Ensure the path is correct and writable."
+        exit 1
+    fi
+
+    # Set file permissions to 644 (readable by all, writable only by the owner)
+    chmod 644 "$file_path"
+    if [ $? -ne 0 ]; then
+        error "Failed to set permissions on '$file_path'."
+        exit 1
+    fi
+
+    # Set the file owner to user 'pi' and group 'pi'
+    chown pi:pi "$file_path"
+    if [ $? -ne 0 ]; then
+        error "Failed to change ownership of '$file_path'."
+        exit 1
+    fi
+
+    info "Successfully updated '$file_path'"
+}
+
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -97,3 +148,4 @@ preflight_checks
 update_configuration
 update_udev_rules
 update_sudo_permissions
+ensure_moonraker_permissions
