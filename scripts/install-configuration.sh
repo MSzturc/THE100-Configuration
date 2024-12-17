@@ -84,5 +84,6 @@ install_logs
 sudo "$SCRIPT_DIR"/update-configuration.sh
 sudo "$SCRIPT_DIR"/update-klipper.sh
 sudo "$SCRIPT_DIR"/update-moonraker.sh
+sudo "$SCRIPT_DIR"/install-printer-cfg.sh
 
 restart_klipper_service
