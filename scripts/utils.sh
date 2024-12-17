@@ -14,6 +14,9 @@ THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
 # Where the user Klipper config is located
 PRINTER_DATA_PATH="$(user_dir)/printer_data"
 
+# Where the Moonraker folder is located
+MOONRAKER_PATH="$(user_dir)/moonraker"
+
 # Function to ensure the script is NOT run as root.
 ensure_not_root() {
     if [ "$EUID" -eq 0 ]; then
@@ -40,6 +43,16 @@ is_klipper_installed() {
         check "Klipper service found! Proceeding..."
     else
         error "Klipper service not found, please install Klipper first!"
+        exit 1
+    fi
+}
+
+# Function to check if moonraker is installed
+is_moonraker_installed() {
+    if [ -d "$MOONRAKER_PATH" ]; then
+        check "moonraker folder found. Proceeding..."
+    else
+        error "Error: moonraker folder not found at '$MOONRAKER_PATH'."
         exit 1
     fi
 }
