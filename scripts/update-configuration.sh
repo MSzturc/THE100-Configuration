@@ -22,6 +22,21 @@ update_configuration() {
     info "Installation of THE100 Configuration completed successfully!"
 }
 
+update_udev_rules()
+{
+  info "Updating THEOS Board device symlinks.."
+  
+  # Remove existing udev rules files in /etc/udev/rules.d/ 
+  # All board-specific udev rule files in THE100-Configuration are prefixed with '98-'
+  rm -f /etc/udev/rules.d/98-*.rules
+  
+  # Create symbolic links for the updated udev rules from the configuration directory
+  # Source: THE100-Configuration/config/boards/*/*.rules
+  # Destination: /etc/udev/rules.d/ (udev directory where rule files are loaded)
+  # This ensures the system uses the latest board-specific udev rules for device management
+  ln -s $(user_dir)/THE100-Configuration/config/boards/*/*.rules /etc/udev/rules.d/
+}
+
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -30,3 +45,4 @@ preflight_checks() {
 
 preflight_checks
 update_configuration
+update_udev_rules
