@@ -7,13 +7,17 @@
 #   - It echoes the value of the USER environment variable, which represents the current logged-in user.
 current_user() {
     if [ "$EUID" -eq 0 ]; then
-        # If running as root, check for the original user in SUDO_USER
-        if [ -n "$SUDO_USER" ]; then
+        # If BASE_USER is set, use it
+        if [ -n "$BASE_USER" ]; then
+            echo "$BASE_USER"
+        # Otherwise, check for SUDO_USER
+        elif [ -n "$SUDO_USER" ]; then
             echo "$SUDO_USER"
         else
             echo "root"
         fi
     else
+        # If not root, just return the current user
         echo "$USER"
     fi
 }
