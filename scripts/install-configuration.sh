@@ -158,3 +158,5 @@ download_configuration
 install_logs
 install_hooks
 setup_sudo_permissions
+
+sudo "$SCRIPT_DIR"/update-configuration.sh
