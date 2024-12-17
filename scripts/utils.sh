@@ -8,6 +8,9 @@ source "$SCRIPT_DIR"/helpers/log.sh
 source "$SCRIPT_DIR"/helpers/user_dir.sh
 source "$SCRIPT_DIR"/helpers/current_user.sh
 
+# Where to clone THE100-Configuration repository
+THE100_CONFIG_PATH="$(user_dir)/THE100-Configuration"
+
 # Function to ensure the script is NOT run as root.
 ensure_not_root() {
     if [ "$EUID" -eq 0 ]; then
@@ -34,7 +37,17 @@ is_klipper_installed() {
         check "Klipper service found! Proceeding..."
     else
         error "Klipper service not found, please install Klipper first!"
-        exit -1
+        exit 1
+    fi
+}
+
+# Function to check if THE100-Configuration is installed
+is_configuration_installed() {
+    if [ -d "$THE100_CONFIG_PATH" ]; then
+        check "THE100-Configuration folder found. Proceeding..."
+    else
+        error "Error: THE100-Configuration folder not found at '$THE100_CONFIG_PATH'."
+        exit 1
     fi
 }
 

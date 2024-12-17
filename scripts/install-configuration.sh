@@ -37,23 +37,6 @@ download_configuration() {
     fi
 }
 
-install_configuration() {
-    info "Installation of THE100 Configuration..."
-    
-    # Symlink THE100 Configuration (read-only git repository) to the user's config directory
-    info "Creating symbolic links for configuration directories..."
-    for dir in config macros scripts; do
-        debug "Linking directory: $dir"
-        ln -fsn ${THE100_CONFIG_PATH}/$dir ${KLIPPER_CONFIG_PATH}/$dir
-    done
-
-    # CHMOD the scripts to be sure they are all executables (Git should keep the modes on files but it's to be sure)
-    info "Ensuring scripts are executable..."
-    chmod +x ${THE100_CONFIG_PATH}/scripts/install-configuration.sh
-
-    info "Installation of THE100 Configuration completed successfully!"
-}
-
 # This function sets up git hooks for THE100-Configuration, Klipper, and Moonraker.
 # The post-merge hooks ensure that specific scripts are executed automatically
 # after a 'git pull' or 'git merge' operation in each repository. We use it to reapply
@@ -193,7 +176,6 @@ preflight_checks() {
 
 preflight_checks
 download_configuration
-install_configuration
 install_logs
 install_hooks
 setup_sudo_permissions
