@@ -22,9 +22,6 @@ BD_SENSOR_PATH="$(user_dir)/Bed_Distance_sensor/klipper"
 # Where the Shake&Tune folder is located
 SHAKETUNE_PATH="$(user_dir)/klippain_shaketune"
 
-# Where the TMC Autotune folder is located
-AUTOTUNE_PATH="$(user_dir)/klipper_tmc_autotune"
-
 # This function sets up git hooks for THE100-Configuration, Klipper, and Moonraker.
 # The post-merge hooks ensure that specific scripts are executed automatically
 # after a 'git pull' or 'git merge' operation in each repository. We use it to reapply
@@ -147,46 +144,6 @@ install_shaketune_extension(){
     info "Shake&Tune extension installation completed."
 }
 
-install_autotune_extension(){
-    info "Installing TMC Autotune extension to klipper..."
-
-    # Debug-Ausgabe: Pfade anzeigen
-    debug "AUTOTUNE_PATH is set to '$AUTOTUNE_PATH'"
-    debug "KLIPPER_PATH is set to '$KLIPPER_PATH'"
-
-    # Check and create symbolic link for autotune_tmc.py
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/autotune_tmc.py" ]]
-    then
-        debug "Creating symbolic link for autotune_tmc.py..."
-        ln -srfn "$AUTOTUNE_PATH/autotune_tmc.py" "$KLIPPER_PATH/klippy/plugins/autotune_tmc.py"
-        debug "Symbolic link for autotune_tmc.py created."
-    else
-        debug "Symbolic link for autotune_tmc.py already exists. Skipping."
-    fi
-
-    # Check and create symbolic link for motor_constants.py
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/motor_constants.py" ]]
-    then
-        debug "Creating symbolic link for motor_constants.py..."
-        ln -srfn "$AUTOTUNE_PATH/motor_constants.py" "$KLIPPER_PATH/klippy/plugins/motor_constants.py"
-        debug "Symbolic link for motor_constants.py created."
-    else
-        debug "Symbolic link for motor_constants.py already exists. Skipping."
-    fi
-
-    # Check and create symbolic link for motor_database.cfg
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/motor_database.cfg" ]]
-    then
-        debug "Creating symbolic link for motor_database.cfg..."
-        ln -srfn "$AUTOTUNE_PATH/motor_database.cfg" "$KLIPPER_PATH/klippy/plugins/motor_database.cfg"
-        debug "Symbolic link for motor_database.cfg created."
-    else
-        debug "Symbolic link for motor_database.cfg already exists. Skipping."
-    fi
-
-    info "TMC Autotune extension installation completed."
-}
-
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -198,4 +155,3 @@ preflight_checks
 install_hooks
 install_bdsensor_extension
 install_shaketune_extension
-install_autotune_extension
