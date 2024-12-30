@@ -7,7 +7,7 @@ source "$SCRIPT_DIR"/utils.sh
 # Paths to the configuration file and printer configuration
 AVAHI_PATH="/etc/avahi/avahi-daemon.conf"
 PRINTER_CFG="$(user_dir)/printer_data/config/printer.cfg"
-CONFIG_DIR="$(user_dir)/printer_data/config/config"
+CONFIG_DIR="$(user_dir)/printer_data/config/config/templates"
 
 # Check if PRINTER_CFG already exists
 if [[ -f "$PRINTER_CFG" ]]; then
@@ -22,19 +22,26 @@ if [[ -f "$AVAHI_PATH" ]]; then
     debug "Avahi configuration file found at $AVAHI_PATH."
 
     # Extract the value of host-name and remove whitespace
-    VALUE=$(grep -E "^\s*host-name\s*=" "$AVAHI_PATH" | sed -E 's/.*=\s*//;s/\s*$//')
+    debug=$(grep -E "^\s*host-name\s*=" "$AVAHI_PATH" | sed -E 's/.*=\s*//;s/\s*$//')
     debug "Extracted host-name value: '$VALUE'"
 
-    # Copy the appropriate configuration based on the value
-    if [[ "$VALUE" == "t250" ]]; then
-        info "host-name is t250. Copying t250.cfg to printer.cfg..."
-        cp "$CONFIG_DIR/t250.cfg" "$PRINTER_CFG"
-    elif [[ "$VALUE" == "t100" ]]; then
-        info "host-name is t100. Copying t100.cfg to printer.cfg..."
-        cp "$CONFIG_DIR/t100.cfg" "$PRINTER_CFG"
-    else
-        error "Unknown value for host-name: '$VALUE'. No action performed."
-        exit 1
+    # Check if VALUE is set
+    if [[ -z "$VALUE" ]]; then
+        debug "No value provided for 'VALUE'. Fallback to 't250' as default"
+        VALUE="t250"
+    fi
+
+    # Define the path to the desired configuration file
+    CONFIG_FILE="$CONFIG_DIR/${VALUE}.cfg"
+
+    # Check if the configuration file exists
+    if [[ -f "$CONFIG_FILE" ]]; then
+        info "host-name is '$VALUE'. Copying '$CONFIG_FILE' to '$PRINTER_CFG'..."
+        cp "$CONFIG_FILE" "$PRINTER_CFG"
+        if [[ $? -ne 0 ]]; then
+            error "Error copying '$CONFIG_FILE' to '$PRINTER_CFG'."
+            exit 1
+        fi
     fi
 
     # Adjust ownership and permissions for pi user
