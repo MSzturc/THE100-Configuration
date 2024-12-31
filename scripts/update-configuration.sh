@@ -28,6 +28,7 @@ update_configuration() {
 
     info "Creating symbolic links for logs directory..."
     ln -fsn ${THEOS_LOGS_PATH} ${KLIPPER_CONFIG_PATH}/logs
+    ln -fsn ${PRINTER_DATA_PATH}/logs/klippy.log ${KLIPPER_CONFIG_PATH}/logs/klipper.log
 
     info "Installation of THE100 Configuration completed successfully!"
 }
