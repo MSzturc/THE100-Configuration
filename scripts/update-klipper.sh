@@ -22,9 +22,6 @@ BD_SENSOR_PATH="$(user_dir)/Bed_Distance_sensor/klipper"
 # Where the Shake&Tune folder is located
 SHAKETUNE_PATH="$(user_dir)/klippain_shaketune"
 
-# Where the TMC Autotune folder is located
-AUTOTUNE_PATH="$(user_dir)/klipper_tmc_autotune"
-
 # This function sets up git hooks for THE100-Configuration, Klipper, and Moonraker.
 # The post-merge hooks ensure that specific scripts are executed automatically
 # after a 'git pull' or 'git merge' operation in each repository. We use it to reapply
@@ -57,75 +54,6 @@ install_hooks()
         info "Post-merge hook set up for moonraker."
     fi
 }
-
-install_bdsensor_extension(){
-    info "Installing BD_Sensor extension to klipper..."
-    
-    # Debug-Ausgabe: Pfade anzeigen
-    debug "BD_SENSOR_PATH is set to '$BD_SENSOR_PATH'"
-    debug "KLIPPER_PATH is set to '$KLIPPER_PATH'"
-
-    # Check if BDsensor.py does not already exist as a symbolic link
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/BDsensor.py" ]]
-    then
-        debug "Creating symbolic link for BDsensor.py..."
-        # Create a symbolic link for BDsensor.py
-        ln -s "$BD_SENSOR_PATH/BDsensor.py" "$KLIPPER_PATH/klippy/plugins/BDsensor.py"
-        debug "Symbolic link for BDsensor.py created."
-    else
-        debug "Symbolic link for BDsensor.py already exists. Skipping."
-    fi
-
-    # Check if BD_sensor.c does not already exist as a symbolic link
-    if [[ ! -L "$KLIPPER_PATH/src/BD_sensor.c" ]]
-    then
-        debug "Creating symbolic link for BD_sensor.c..."
-        # Create a symbolic link for BD_sensor.c
-        ln -s "$BD_SENSOR_PATH/BD_sensor.c" "$KLIPPER_PATH/src/BD_sensor.c"
-        debug "Symbolic link for BD_sensor.c created."
-    else
-        debug "Symbolic link for BD_sensor.c already exists. Skipping."
-    fi
-
-    # Check if make_with_bdsensor.sh does not already exist as a symbolic link
-    if [[ ! -L "$KLIPPER_PATH/make_with_bdsensor.sh" ]]
-    then
-        debug "Creating symbolic link for make_with_bdsensor.sh..."
-        # Create a symbolic link for make_with_bdsensor.sh
-        ln -s "$BD_SENSOR_PATH/make_with_bdsensor.sh" "$KLIPPER_PATH/make_with_bdsensor.sh"
-        debug "Symbolic link for make_with_bdsensor.sh created."
-    else
-        debug "Symbolic link for make_with_bdsensor.sh already exists. Skipping."
-    fi
-
-    # Adding files to .git/info/exclude to prevent them from being tracked by git
-    if ! grep -q "klippy/plugins/BDsensor.py" "$KLIPPER_PATH/.git/info/exclude"; then
-        debug "Adding BDsensor.py to .git/info/exclude..."
-        echo "klippy/plugins/BDsensor.py" >> "$KLIPPER_PATH/.git/info/exclude"
-        debug "BDsensor.py added to .git/info/exclude."
-    else
-        debug "BDsensor.py already in .git/info/exclude. Skipping."
-    fi
-
-    if ! grep -q "src/BD_sensor.c" "$KLIPPER_PATH/.git/info/exclude"; then
-        debug "Adding BD_sensor.c to .git/info/exclude..."
-        echo "src/BD_sensor.c" >> "$KLIPPER_PATH/.git/info/exclude"
-        debug "BD_sensor.c added to .git/info/exclude."
-    else
-        debug "BD_sensor.c already in .git/info/exclude. Skipping."
-    fi
-
-    if ! grep -q "make_with_bdsensor.sh" "$KLIPPER_PATH/.git/info/exclude"; then
-        debug "Adding make_with_bdsensor.sh to .git/info/exclude..."
-        echo "make_with_bdsensor.sh" >> "$KLIPPER_PATH/.git/info/exclude"
-        debug "make_with_bdsensor.sh added to .git/info/exclude."
-    else
-        debug "make_with_bdsensor.sh already in .git/info/exclude. Skipping."
-    fi
-    
-    info "BD_Sensor extension installation completed."
-}
-
 install_shaketune_extension(){
     info "Installing Shake&Tune extension to klipper..."
 
@@ -147,46 +75,6 @@ install_shaketune_extension(){
     info "Shake&Tune extension installation completed."
 }
 
-install_autotune_extension(){
-    info "Installing TMC Autotune extension to klipper..."
-
-    # Debug-Ausgabe: Pfade anzeigen
-    debug "AUTOTUNE_PATH is set to '$AUTOTUNE_PATH'"
-    debug "KLIPPER_PATH is set to '$KLIPPER_PATH'"
-
-    # Check and create symbolic link for autotune_tmc.py
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/autotune_tmc.py" ]]
-    then
-        debug "Creating symbolic link for autotune_tmc.py..."
-        ln -srfn "$AUTOTUNE_PATH/autotune_tmc.py" "$KLIPPER_PATH/klippy/plugins/autotune_tmc.py"
-        debug "Symbolic link for autotune_tmc.py created."
-    else
-        debug "Symbolic link for autotune_tmc.py already exists. Skipping."
-    fi
-
-    # Check and create symbolic link for motor_constants.py
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/motor_constants.py" ]]
-    then
-        debug "Creating symbolic link for motor_constants.py..."
-        ln -srfn "$AUTOTUNE_PATH/motor_constants.py" "$KLIPPER_PATH/klippy/plugins/motor_constants.py"
-        debug "Symbolic link for motor_constants.py created."
-    else
-        debug "Symbolic link for motor_constants.py already exists. Skipping."
-    fi
-
-    # Check and create symbolic link for motor_database.cfg
-    if [[ ! -L "$KLIPPER_PATH/klippy/plugins/motor_database.cfg" ]]
-    then
-        debug "Creating symbolic link for motor_database.cfg..."
-        ln -srfn "$AUTOTUNE_PATH/motor_database.cfg" "$KLIPPER_PATH/klippy/plugins/motor_database.cfg"
-        debug "Symbolic link for motor_database.cfg created."
-    else
-        debug "Symbolic link for motor_database.cfg already exists. Skipping."
-    fi
-
-    info "TMC Autotune extension installation completed."
-}
-
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -196,6 +84,4 @@ preflight_checks() {
 
 preflight_checks
 install_hooks
-install_bdsensor_extension
 install_shaketune_extension
-install_autotune_extension
