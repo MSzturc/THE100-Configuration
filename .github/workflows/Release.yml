@@ -47,7 +47,7 @@ jobs:
           config: ./cliff-release.toml
           args: ${{ steps.latest_tag.outputs.TAG_NAME }}..HEAD
 
-      - name: Create empty release
+      - name: Create Release
         id: create-release
         uses: softprops/action-gh-release@v1
         with:
