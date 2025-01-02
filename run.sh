@@ -3,6 +3,15 @@ rm -rf ~/logs/theos.log
 touch ~/logs/theos.log
 chown pi:pi ~/logs/theos.log
 chmod 666 ~/logs/theos.log
-git reset cd8a284 --hard
+
+cd ~/klipper/
+git checkout develop
+git pull
+
+cd ~/THE100-Configuration/
+git checkout develop
+git pull
+
+git reset f79fe5e --hard
 git pull
 ./scripts/install-configuration.sh 
