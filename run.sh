@@ -1,4 +1,10 @@
 #!/bin/bash
+
+rm -rf ~/printer_data/logs/klippy.log
+touch ~/printer_data/logs/klippy.log
+chown pi:pi ~/printer_data/logs/klippy.log
+chmod 666 ~/printer_data/logs/klippy.log
+
 rm -rf ~/logs/theos.log
 touch ~/logs/theos.log
 chown pi:pi ~/logs/theos.log
