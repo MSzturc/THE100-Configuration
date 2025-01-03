@@ -6,6 +6,7 @@ chmod 666 ~/logs/theos.log
 
 cd ~/klipper/
 git checkout develop
+git reset --hard origin/develop
 git pull
 
 cd ~/THE100-Configuration/
