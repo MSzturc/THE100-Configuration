@@ -85,3 +85,4 @@ preflight_checks() {
 preflight_checks
 install_hooks
 install_shaketune_extension
+restart_klipper_service
