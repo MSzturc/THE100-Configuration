@@ -75,6 +75,21 @@ install_shaketune_extension(){
     info "Shake&Tune extension installation completed."
 }
 
+enable_rt_runtime() {
+    info "Enabling realtime scheduler..."
+    local sysctl_file="/etc/sysctl.d/10-rt-runtime-disable.conf"
+
+    if [[ -f "$sysctl_file" ]]; then
+        echo "Realtime scheduler activated."
+    else
+        echo "kernel.sched_rt_runtime_us=-1" > "$sysctl_file"
+        echo "Realtime scheduler activated."
+
+        # Apply the changes immediately
+        sysctl --system
+    fi
+}
+
 preflight_checks() {
     ensure_root
     is_klipper_installed
@@ -86,3 +101,4 @@ preflight_checks
 install_hooks
 install_shaketune_extension
 restart_klipper_service
+enable_rt_runtime
