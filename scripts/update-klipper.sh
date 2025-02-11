@@ -80,13 +80,12 @@ enable_rt_runtime() {
     local sysctl_file="/etc/sysctl.d/10-rt-runtime-disable.conf"
 
     if [[ -f "$sysctl_file" ]]; then
-        echo "Realtime scheduler activated."
+        info "Realtime scheduler activated."
     else
-        echo "kernel.sched_rt_runtime_us=-1" > "$sysctl_file"
-        echo "Realtime scheduler activated."
+        info "kernel.sched_rt_runtime_us=-1" > "$sysctl_file" 2>/dev/null
+        info "Realtime scheduler activated."
 
-        # Apply the changes immediately
-        sysctl --system
+        sysctl --system >/dev/null 2>&1
     fi
 }
 
@@ -100,5 +99,5 @@ preflight_checks() {
 preflight_checks
 install_hooks
 install_shaketune_extension
-restart_klipper_service
 enable_rt_runtime
+restart_klipper_service
