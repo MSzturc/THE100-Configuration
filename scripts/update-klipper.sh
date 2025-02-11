@@ -82,12 +82,42 @@ enable_rt_runtime() {
     if [[ -f "$sysctl_file" ]]; then
         info "Realtime scheduler activated."
     else
-        info "kernel.sched_rt_runtime_us=-1" > "$sysctl_file" 2>/dev/null
+        echo "kernel.sched_rt_runtime_us=-1" > "$sysctl_file" 2>/dev/null
         info "Realtime scheduler activated."
 
         sysctl --system >/dev/null 2>&1
     fi
 }
+
+enable_rt_in_klipper_service() {
+    info "Enabling realtime scheduler in klipper service..."
+    local service_file="/etc/systemd/system/klipper.service"
+
+    # Abbrechen, falls die Datei nicht existiert
+    [[ ! -f "$service_file" ]] && return 0
+
+    # Flag, um Änderungen zu tracken
+    local changed=0
+
+    # LimitRTPRIO=99 ergänzen, wenn noch nicht vorhanden
+    if ! grep -q '^LimitRTPRIO=99' "$service_file"; then
+        sed -i '/^User=pi$/a LimitRTPRIO=99' "$service_file" 2>/dev/null
+        changed=1
+    fi
+
+    # AmbientCapabilities=CAP_SYS_NICE ergänzen, wenn noch nicht vorhanden
+    if ! grep -q '^AmbientCapabilities=CAP_SYS_NICE' "$service_file"; then
+        sed -i '/^User=pi$/a AmbientCapabilities=CAP_SYS_NICE' "$service_file" 2>/dev/null
+        changed=1
+    fi
+
+    # Nur reloaden, wenn wir etwas geändert haben
+    if [[ "$changed" -eq 1 ]]; then
+        systemctl daemon-reload >/dev/null 2>&1
+        info "Realtime scheduler activated (systemd daemon reloaded)."
+    fi
+}
+
 
 preflight_checks() {
     ensure_root
@@ -100,4 +130,5 @@ preflight_checks
 install_hooks
 install_shaketune_extension
 enable_rt_runtime
+enable_rt_in_klipper_service
 restart_klipper_service
