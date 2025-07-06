@@ -22,7 +22,7 @@ if [[ -f "$AVAHI_PATH" ]]; then
     debug "Avahi configuration file found at $AVAHI_PATH."
 
     # Extract the value of host-name and remove whitespace
-    debug=$(grep -E "^\s*host-name\s*=" "$AVAHI_PATH" | sed -E 's/.*=\s*//;s/\s*$//')
+    VALUE=$(grep -E "^\s*host-name\s*=" "$AVAHI_PATH" | sed -E 's/.*=\s*//;s/\s*$//')
     debug "Extracted host-name value: '$VALUE'"
 
     # Check if VALUE is set
