@@ -31,6 +31,9 @@ fi
 # Aktuelles Verzeichnis des Skripts ermitteln
 current_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
+# Helper zur rekursiven [mcu]-Suche über [include ...] Direktiven hinweg
+source "$current_dir/helpers/parse_mcu.sh"
+
 # Pfad zur printer.cfg, die ausgelesen werden soll
 printer_cfg="/home/pi/printer_data/config/printer.cfg"
 
@@ -42,12 +45,18 @@ fi
 
 echo "Searching for MCU..."
 
-# Werte aus dem [mcu]-Abschnitt extrahieren
-serial=$(awk '/\[mcu\]/{flag=1; next} /\[/{flag=0} flag && /^[^#]*serial:/ {print $2}' "$printer_cfg")
-cpu=$(awk '/\[mcu\]/{flag=1; next} /\[/{flag=0} flag && /^[^#]*cpu:/ {print $2}' "$printer_cfg")
+# Werte aus dem [mcu]-Abschnitt extrahieren — folgt [include ...]-Direktiven,
+# damit auch die modulare Konfiguration unterstützt wird, in der [mcu] in
+# einer separaten Datei (z.B. config/boards/<board>/config.cfg) liegt.
+mcu_info=$(find_mcu_in_config "$printer_cfg") || {
+    echo "Error: Could not extract 'serial' or 'cpu' from any [mcu] section reachable from $printer_cfg!"
+    exit 1
+}
+serial=$(echo "$mcu_info" | sed -n 's/^serial=//p')
+cpu=$(echo "$mcu_info" | sed -n 's/^cpu=//p')
 
 if [ -z "$serial" ] || [ -z "$cpu" ]; then
-    echo "Error: Could not extract 'serial' or 'cpu' from the [mcu] section in $printer_cfg!"
+    echo "Error: Could not extract 'serial' or 'cpu' from the [mcu] section reachable from $printer_cfg!"
     exit 1
 fi
 

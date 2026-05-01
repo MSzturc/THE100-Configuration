@@ -14,5 +14,6 @@ else
 fi
 
 
-# Call Test
+# Call Tests
 test_logs
+test_parse_mcu
