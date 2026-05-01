@@ -21,3 +21,4 @@ test_z_tilt_points
 test_dynamic_mesh
 test_twist_compensation
 test_dual_wiring
+test_nozzle_diameter
