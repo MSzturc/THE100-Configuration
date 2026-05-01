@@ -25,3 +25,4 @@ test_nozzle_diameter
 test_filament_diameter
 test_primeline
 test_print_pipeline
+test_microsteps
