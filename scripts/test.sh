@@ -17,3 +17,4 @@ fi
 # Call Tests
 test_logs
 test_parse_mcu
+test_z_tilt_points
