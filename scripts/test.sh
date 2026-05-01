@@ -28,3 +28,4 @@ test_print_pipeline
 test_microsteps
 test_tmc_interpolate
 test_second_homing_speed
+test_safe_z_home
