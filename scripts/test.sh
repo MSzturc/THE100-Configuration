@@ -18,3 +18,4 @@ fi
 test_logs
 test_parse_mcu
 test_z_tilt_points
+test_dynamic_mesh
